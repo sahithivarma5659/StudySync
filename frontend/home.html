@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>StudySync | Home</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="logo">📝</div>
+  <div class="app-name">StudySync</div>
+  <div class="menu-container">
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+
+    <div class="menu-dropdown" id="menuDropdown">
+      <div id="menuQuiz" onclick="goQuiz()">Quiz</div>
+  <div id="menuTimetable" onclick="goTimetable()">Timetable</div>
+  <div id="menuImportant" onclick="goImportant()">Important Questions</div>
+       
+    </div>
+  </div>
+</div>
+
+ <div class="hero">
+  <h1>
+    Master Your Exams with <br>
+    <span class="highlight">Smart Learning</span>
+  </h1>
+
+  <p class="subtitle">
+    Upload your syllabus, take AI quizzes, track performance, and get a
+    personalized study timetable based on your learning pace.
+  </p>
+
+  <button onclick="goUpload()">Start Learning →</button>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

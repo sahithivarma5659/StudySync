@@ -1,0 +1,53 @@
+ <!DOCTYPE html>
+<html>
+<head>
+  <title>StudySync | Upload</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="logo">📝</div>
+  <div class="app-name">StudySync</div>
+</div>
+
+<div class="page-container">
+  <h2>Upload Learning Inputs</h2>
+
+  <label>Syllabus (Image / PDF)</label>
+    <div class="upload-box">
+  <label class="upload-label">
+    <input type="file" id="syllabusInput" hidden onchange="showFiles('syllabusInput','syllabusFiles')">
+    <div class="upload-content">
+      <p class="upload-title">Upload Syllabus</p>
+      <p class="upload-sub">Click to upload (PDF / Image)</p>
+    </div>
+  </label>
+  <div class="file-list" id="syllabusFiles"></div>
+</div>
+
+  <label>Previous Year Question Papers</label>
+  <div class="upload-box">
+  <label class="upload-label">
+    <input type="file" id="pyqInput" multiple hidden onchange="showFiles('pyqInput','pyqFiles')">
+    <div class="upload-content">
+      <p class="upload-title">Previous Year Question Papers</p>
+      <p class="upload-sub">Upload multiple files (PDF / Image)</p>
+    </div>
+  </label>
+  <div class="file-list" id="pyqFiles"></div>
+</div>
+
+  <label>Number of Units</label>
+  <input type="number" id="unitCount">
+
+  <p class="hint">Important questions will be generated from PYQs</p>
+
+    <button id="generateBtn" class="primary-btn">
+  Generate Quiz
+</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
