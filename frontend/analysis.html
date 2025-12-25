@@ -7,22 +7,86 @@
 <body>
 
 <div class="top-bar">
-  <div class="logo">📝</div>
-  <div class="app-name">StudySync</div>
+  <div class="logo">📊</div>
+  <div class="app-name">Performance Analysis</div>
 </div>
 
 <div class="page-container">
-  <h2>Performance Analysis</h2>
+  <h2>Your Quiz Analysis</h2>
 
-   <div id="analysisContent"></div>
-  <h3>Select Learning Speed</h3>
-  <label><input type="radio" name="speed" value="slow"> Slow</label>
-  <label><input type="radio" name="speed" value="average"> Average</label>
-  <label><input type="radio" name="speed" value="fast"> Fast</label>
+  <div id="analysisContent"></div>
 
-  <button onclick="generateTimetable()">Generate Study Plan</button>
+  <h3>Select Your Learning Speed</h3>
+
+  <div class="radio-group">
+    <label>
+      <input type="radio" name="speed" value="slow">
+      Slow Learner (needs more revision)
+    </label>
+    <label>
+      <input type="radio" name="speed" value="average">
+      Average Learner
+    </label>
+    <label>
+      <input type="radio" name="speed" value="fast">
+      Fast Learner (quick grasp)
+    </label>
+  </div>
+
+  <button onclick="saveSpeed()">Generate Timetable</button>
 </div>
 
-<script src="script.js"></script>
+<script>
+/*********************
+ ANALYSIS LOGIC
+*********************/
+function getLevel(score) {
+  if (score <= 2) return "Weak";
+  if (score === 3) return "Average";
+  return "Strong";
+}
+
+const scores = [
+  { unit: "Unit II", score: Number(localStorage.getItem("unit_2_score")) },
+  { unit: "Unit III", score: Number(localStorage.getItem("unit_3_score")) },
+  { unit: "Unit IV", score: Number(localStorage.getItem("unit_4_score")) }
+];
+
+let html = "<table><tr><th>Unit</th><th>Score</th><th>Level</th></tr>";
+
+scores.forEach(s => {
+  html += `
+    <tr>
+      <td>${s.unit}</td>
+      <td>${s.score}/5</td>
+      <td>${getLevel(s.score)}</td>
+    </tr>
+  `;
+});
+
+html += "</table>";
+document.getElementById("analysisContent").innerHTML = html;
+
+/*********************
+ SAVE LEARNER SPEED
+*********************/
+function saveSpeed() {
+  const selected = document.querySelector("input[name='speed']:checked");
+
+  if (!selected) {
+    alert("Please select your learning speed");
+    return;
+  }
+
+  localStorage.setItem("learnerSpeed", selected.value);
+
+  // unlock next steps
+  localStorage.setItem("timetableGenerated", "true");
+  localStorage.setItem("importantReady", "true");
+
+  window.location.href = "/frontend/timetable.html";
+}
+</script>
+
 </body>
 </html>
