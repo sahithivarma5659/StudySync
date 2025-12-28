@@ -1,0 +1,55 @@
+{
+  "unit": "UNIT III",
+  "questions": [
+    {
+      "question": "X → Y means:",
+      "options": ["Y determines X", "X determines Y", "X equals Y", "X and Y are independent"],
+      "answer": "2"
+    },
+    {
+      "question": "Which dependency always holds?",
+      "options": ["Partial dependency", "Full dependency", "Trivial dependency", "Multivalued dependency"],
+      "answer": "3"
+    },
+    {
+      "question": "Attribute closure is used to find:",
+      "options": ["Foreign keys", "Candidate keys", "Primary keys only", "Indexes"],
+      "answer": "2"
+    },
+    {
+      "question": "Which normal form removes partial dependency?",
+      "options": ["1NF", "2NF", "3NF", "BCNF"],
+      "answer": "2"
+    },
+    {
+      "question": "Lossless decomposition ensures:",
+      "options": ["No redundancy", "No data loss", "No joins", "No dependency"],
+      "answer": "2"
+    },
+    {
+      "question": "Which normal form removes transitive dependency?",
+      "options": ["2NF", "3NF", "4NF", "BCNF"],
+      "answer": "2"
+    },
+    {
+      "question": "BCNF is stricter than:",
+      "options": ["1NF", "2NF", "3NF", "4NF"],
+      "answer": "3"
+    },
+    {
+      "question": "Multivalued dependency leads to:",
+      "options": ["3NF", "BCNF", "4NF", "5NF"],
+      "answer": "3"
+    },
+    {
+      "question": "Minimal cover is also called:",
+      "options": ["Complete cover", "Irreducible set", "Partial cover", "Full cover"],
+      "answer": "2"
+    },
+    {
+      "question": "Dependency preservation means:",
+      "options": ["Dependencies are removed", "Dependencies are maintained", "No join required", "No redundancy"],
+      "answer": "2"
+    }
+  ]
+}

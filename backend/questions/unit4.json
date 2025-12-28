@@ -1,0 +1,56 @@
+{
+  "unit": "UNIT IV",
+  "questions": [
+    {
+      "question": "A transaction is a:",
+      "options": ["Single query", "Sequence of database operations", "Database file", "Schema"],
+      "answer": "2"
+    },
+    {
+      "question": "Which ACID property ensures all-or-nothing?",
+      "options": ["Consistency", "Isolation", "Atomicity", "Durability"],
+      "answer": "3"
+    },
+    {
+      "question": "Serializability ensures:",
+      "options": ["Fast execution", "Correct concurrent execution", "No deadlock", "No rollback"],
+      "answer": "2"
+    },
+    {
+      "question": "Which lock allows multiple reads?",
+      "options": ["Exclusive lock", "Shared lock", "Binary lock", "Update lock"],
+      "answer": "2"
+    },
+    {
+      "question": "Deadlock occurs when:",
+      "options": ["Transactions wait forever", "System crashes", "Commit fails", "Rollback fails"],
+      "answer": "1"
+    },
+    {
+      "question": "Which protocol avoids deadlocks completely?",
+      "options": ["Two-phase locking", "Timestamp protocol", "Wait-die", "Wound-wait"],
+      "answer": "2"
+    },
+    {
+      "question": "Validation-based protocol is also called:",
+      "options": ["Pessimistic control", "Optimistic control", "Locking protocol", "Timestamp control"],
+      "answer": "2"
+    },
+    {
+      "question": "Which phase checks conflicts in optimistic protocol?",
+      "options": ["Read", "Validation", "Write", "Commit"],
+      "answer": "2"
+    },
+    {
+      "question": "Lock granularity refers to:",
+      "options": ["Transaction size", "Lock size", "Level of locking", "Data size"],
+      "answer": "3"
+    },
+    {
+      "question": "Which technique handles deadlock?",
+      "options": ["Detection", "Prevention", "Recovery", "All of the above"],
+      "answer": "4"
+    }
+  ]
+}
+

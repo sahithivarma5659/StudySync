@@ -1,0 +1,56 @@
+{
+  "unit": "UNIT V",
+  "questions": [
+    {
+      "question": "File organization affects:",
+      "options": ["Data security", "Data retrieval speed", "Data encryption", "Data compression"],
+      "answer": "2"
+    },
+    {
+      "question": "Which file organization supports fast random access?",
+      "options": ["Sequential", "Heap", "Indexed", "Serial"],
+      "answer": "3"
+    },
+    {
+      "question": "Which index stores actual data records?",
+      "options": ["Dense index", "Sparse index", "Secondary index", "Clustering index"],
+      "answer": "4"
+    },
+    {
+      "question": "In B+ tree, actual data is stored in:",
+      "options": ["Root node", "Internal nodes", "Leaf nodes", "All nodes"],
+      "answer": "3"
+    },
+    {
+      "question": "Hashing is best for:",
+      "options": ["Range queries", "Sorting", "Exact match queries", "Sequential access"],
+      "answer": "3"
+    },
+    {
+      "question": "Static hashing problem:",
+      "options": ["Underflow", "Overflow", "Deadlock", "Starvation"],
+      "answer": "2"
+    },
+    {
+      "question": "Dynamic hashing adjusts to:",
+      "options": ["Query type", "File size", "Transaction count", "Lock type"],
+      "answer": "2"
+    },
+    {
+      "question": "Which index requires less storage?",
+      "options": ["Dense index", "Sparse index", "Secondary index", "Bitmap index"],
+      "answer": "2"
+    },
+    {
+      "question": "Data dictionary stores:",
+      "options": ["Actual records", "Metadata", "Backup data", "Temporary data"],
+      "answer": "2"
+    },
+    {
+      "question": "Which tree is always balanced?",
+      "options": ["Binary tree", "B tree", "Heap", "Linked list"],
+      "answer": "2"
+    }
+  ]
+}
+

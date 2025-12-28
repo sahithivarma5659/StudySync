@@ -16,109 +16,119 @@ function goNotes(){ location.href = "/frontend/notes.html"; }
 function goSignup(){ location.href = "/frontend/signup.html"; }
 function goLogin(){ location.href = "/frontend/index.html"; }
 
-/*********************
- MOCK QUIZ DATA (3 UNITS)
-*********************/
-const QUIZ_DATA = {
-  2: [
-    { q: "What is RDBMS?", options: ["Relational DB", "Network DB", "File System"], answer: 0 },
-    { q: "Which is a DDL command?", options: ["SELECT", "INSERT", "CREATE"], answer: 2 },
-    { q: "Relational Algebra is?", options: ["Procedural", "Non-Procedural", "None"], answer: 0 },
-    { q: "Which is an aggregate function?", options: ["WHERE", "SUM", "JOIN"], answer: 1 },
-    { q: "SQL Views are?", options: ["Virtual tables", "Indexes", "Triggers"], answer: 0 }
-  ],
-  3: [
-    { q: "Functional Dependency defines?", options: ["Relation", "Constraint", "Key"], answer: 1 },
-    { q: "Trivial dependency?", options: ["X→Y where Y⊆X", "X→Y", "Y→X"], answer: 0 },
-    { q: "Lossless decomposition ensures?", options: ["No redundancy", "No data loss", "No joins"], answer: 1 },
-    { q: "BCNF is stronger than?", options: ["1NF", "2NF", "3NF"], answer: 2 },
-    { q: "Multivalued dependency used in?", options: ["3NF", "BCNF", "4NF"], answer: 2 }
-  ],
-  4: [
-    { q: "ACID stands for?", options: ["Atomicity, Consistency, Isolation, Durability", "Accuracy"], answer: 0 },
-    { q: "Deadlock occurs when?", options: ["Circular wait", "Timeout", "Crash"], answer: 0 },
-    { q: "Serializability ensures?", options: ["Speed", "Correctness", "Recovery"], answer: 1 },
-    { q: "Checkpoint used for?", options: ["Concurrency", "Recovery", "Indexing"], answer: 1 },
-    { q: "Timestamp protocol prevents?", options: ["Deadlock", "Starvation", "Crash"], answer: 0 }
-  ]
-};
+
 
 /*********************
- QUIZ LOGIC (ONLY quiz.html)
+ QUIZ LOGIC (quiz.html)
 *********************/
 if (CURRENT_PAGE.includes("quiz.html")) {
-  let unit = Number(localStorage.getItem("currentUnit")) || 2;
-  let index = 0;
+
+  const quizData = JSON.parse(localStorage.getItem("quizData"));
+  if (!quizData) {
+    alert("No quiz data found. Please select units again.");
+    window.location.href = "/frontend/unitSelection.html";
+    return;
+  }
+
+  const unitKeys = Object.keys(quizData);
+
+  let unitIndex = Number(localStorage.getItem("currentUnitIndex")) || 0;
+  let questionIndex = 0;
   let score = 0;
-  let timeLeft = 300;
-  let timer;
+  let timeLeft = 300; // 5 minutes
+  let timer = null;
 
   const unitTitle = document.getElementById("unitTitle");
   const questionText = document.getElementById("questionText");
   const optionsDiv = document.getElementById("options");
   const timerDiv = document.getElementById("timer");
 
-  unitTitle.innerText = `Unit ${unit} Quiz`;
+  const currentUnit = unitKeys[unitIndex];
+  const questions = quizData[currentUnit];
 
+  unitTitle.innerText = currentUnit.replace("_", " ").toUpperCase();
+
+  /* ---------- TIMER ---------- */
+  function startTimer() {
+    clearInterval(timer);
+    timeLeft = 300;
+
+    timerDiv.innerText = "⏱ 05:00";
+
+    timer = setInterval(() => {
+      timeLeft--;
+
+      const min = Math.floor(timeLeft / 60);
+      const sec = timeLeft % 60;
+
+      timerDiv.innerText = `⏱ ${min}:${sec.toString().padStart(2, "0")}`;
+
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        finishUnit();
+      }
+    }, 1000);
+  }
+
+  /* ---------- LOAD QUESTION ---------- */
   function loadQuestion() {
-    const q = QUIZ_DATA[unit][index];
-    questionText.innerText = q.q;
+    const q = questions[questionIndex];
+    questionText.innerText = q.question;
     optionsDiv.innerHTML = "";
 
-    q.options.forEach((opt, i) => {
+    q.options.forEach(opt => {
       optionsDiv.innerHTML += `
         <label>
-          <input type="radio" name="opt" value="${i}"> ${opt}
+          <input type="radio" name="opt" value="${opt}">
+          ${opt}
         </label><br>
       `;
     });
   }
 
-  function startTimer() {
-    timer = setInterval(() => {
-      timeLeft--;
-      const m = Math.floor(timeLeft / 60);
-      const s = timeLeft % 60;
-      timerDiv.innerText = `⏱ ${m}:${s.toString().padStart(2,"0")}`;
+  /* ---------- NEXT QUESTION ---------- */
+  window.nextQuestion = () => {
+    const selected = document.querySelector("input[name='opt']:checked");
 
-      if (timeLeft <= 0) finishUnit();
-    }, 1000);
-  }
-
-  window.nextQuestion = function () {
-    const selected = document.querySelector("input[name=opt]:checked");
-    if (selected && Number(selected.value) === QUIZ_DATA[unit][index].answer) {
+    if (selected && selected.value === questions[questionIndex].answer) {
       score++;
     }
 
-    index++;
-    if (index < 5) {
+    questionIndex++;
+
+    if (questionIndex < questions.length) {
       loadQuestion();
     } else {
       finishUnit();
     }
   };
 
+  /* ---------- FINISH UNIT ---------- */
   function finishUnit() {
     clearInterval(timer);
-    localStorage.setItem(`unit_${unit}_score`, score);
 
-    if (unit === 2) {
-      localStorage.setItem("currentUnit", 3);
-      location.reload();
-    } else if (unit === 3) {
-      localStorage.setItem("currentUnit", 4);
+    localStorage.setItem(`${currentUnit}_score`, score);
+
+    unitIndex++;
+    questionIndex = 0;
+    score = 0;
+
+    if (unitIndex < unitKeys.length) {
+      localStorage.setItem("currentUnitIndex", unitIndex);
       location.reload();
     } else {
       localStorage.setItem("quizCompleted", "true");
-      localStorage.removeItem("currentUnit");
-      location.href = "/frontend/analysis.html";
+      localStorage.removeItem("currentUnitIndex");
+      window.location.href = "/frontend/analysis.html";
     }
   }
 
+  /* ---------- INIT ---------- */
   loadQuestion();
   startTimer();
 }
+
+
 
 /*********************
  ANALYSIS PAGE
@@ -126,11 +136,12 @@ if (CURRENT_PAGE.includes("quiz.html")) {
 if (CURRENT_PAGE.includes("analysis.html")) {
   const div = document.getElementById("analysisContent");
 
-  const scores = [
-    { u: "Unit II", s: localStorage.getItem("unit_2_score") },
-    { u: "Unit III", s: localStorage.getItem("unit_3_score") },
-    { u: "Unit IV", s: localStorage.getItem("unit_4_score") }
-  ];
+  const quizData = JSON.parse(localStorage.getItem("quizData"));
+const scores = Object.keys(quizData).map(k => ({
+  u: k.replace("_", " ").toUpperCase(),
+  s: localStorage.getItem(`${k}_score`)
+}));
+
 
   let html = "<table><tr><th>Unit</th><th>Score</th><th>Level</th></tr>";
 
@@ -146,15 +157,9 @@ if (CURRENT_PAGE.includes("analysis.html")) {
   localStorage.setItem("importantReady", "true");
 }
 
-/*********************
- UPLOAD PAGE
-*********************/
-if (CURRENT_PAGE.includes("upload.html")) {
-  const btn = document.getElementById("generateBtn");
-  if (btn) btn.addEventListener("click", uploadFiles);
-}
 
- /*********************
+
+/*********************
  FILE DISPLAY (UPLOAD PAGE)
 *********************/
 function showFiles(inputId, listId) {
@@ -171,53 +176,25 @@ function showFiles(inputId, listId) {
 }
 
 /*********************
- FILE UPLOAD + REDIRECT
-*********************/
-function uploadFiles() {
-  const syllabus = document.getElementById("syllabusInput").files[0];
-  const pyqs = document.getElementById("pyqInput").files;
-
-  if (!syllabus || pyqs.length === 0) {
-    alert("Please upload syllabus and previous year question papers");
-    return;
-  }
-
-  const syllabusForm = new FormData();
-  syllabusForm.append("syllabus", syllabus);
-
-  fetch("http://127.0.0.1:5000/upload-syllabus", {
-    method: "POST",
-    body: syllabusForm
-  })
-  .then(res => res.json())
-  .then(() => {
-    const pyqForm = new FormData();
-    Array.from(pyqs).forEach(file => {
-      pyqForm.append("pyqs", file);
-    });
-
-    return fetch("http://127.0.0.1:5000/upload-pyqs", {
-      method: "POST",
-      body: pyqForm
-    });
-  })
-  .then(res => res.json())
-  .then(() => {
-    console.log("✅ Upload complete");
-    window.location.href = "/frontend/quiz.html";
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Upload failed");
-  });
-}
-
-/*********************
- ATTACH BUTTON (UPLOAD PAGE ONLY)
+ UPLOAD PAGE → VALIDATE → SELECT UNITS
 *********************/
 if (CURRENT_PAGE.includes("upload.html")) {
   const btn = document.getElementById("generateBtn");
-  if (btn) btn.addEventListener("click", uploadFiles);
+
+  if (btn) {
+    btn.onclick = () => {
+
+      const syllabus = document.getElementById("syllabusInput").files.length;
+      const pyqs = document.getElementById("pyqInput").files.length;
+
+      if (!syllabus || !pyqs) {
+        alert("Please upload syllabus and previous year question papers before proceeding.");
+        return;
+      }
+
+      window.location.href = "/frontend/unitSelection.html";
+    };
+  }
 }
 
 /*********************
@@ -227,3 +204,58 @@ function toggleMenu() {
   const m = document.getElementById("menuDropdown");
   if (m) m.style.display = m.style.display === "block" ? "none" : "block";
 }
+
+/*********************
+ Unit selection
+*********************/
+
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const btn = document.getElementById("generateQuizBtn");
+  if (!btn) return; // Not on unitSelection page
+
+  btn.addEventListener("click", () => {
+
+    console.log("✅ Generate Quiz clicked");
+
+    const selectedUnits = [];
+
+    document
+      .querySelectorAll("input[name='unit']:checked")
+      .forEach(cb => selectedUnits.push(cb.value));
+
+    if (selectedUnits.length === 0) {
+      alert("Please select at least one unit");
+      return;
+    }
+
+    fetch("http://127.0.0.1:5000/get-quiz", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ units: selectedUnits })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Server error");
+      return res.json();
+    })
+    .then(data => {
+      console.log("📦 Quiz data:", data);
+
+      if (!data.quiz || Object.keys(data.quiz).length === 0) {
+        alert("No questions found for selected units");
+        return;
+      }
+
+      localStorage.setItem("quizData", JSON.stringify(data.quiz));
+      localStorage.setItem("currentUnitIndex", 0);
+
+      window.location.href = "/frontend/quiz.html";
+    })
+    .catch(err => {
+      console.error("❌ Quiz generation failed:", err);
+      alert("Failed to generate quiz");
+    });
+
+  });
+});

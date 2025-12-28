@@ -1,0 +1,55 @@
+{
+  "unit": "UNIT II",
+  "questions": [
+    {
+      "question": "A relation in RDBMS is represented as a:",
+      "options": ["Graph", "Table", "Tree", "File"],
+      "answer": "2"
+    },
+    {
+      "question": "Which constraint uniquely identifies a tuple?",
+      "options": ["Foreign key", "Primary key", "Check constraint", "Domain constraint"],
+      "answer": "2"
+    },
+    {
+      "question": "Which relational algebra operation selects rows?",
+      "options": ["Projection", "Selection", "Join", "Union"],
+      "answer": "2"
+    },
+    {
+      "question": "Which SQL command deletes a table permanently?",
+      "options": ["DELETE", "DROP", "REMOVE", "TRUNCATE"],
+      "answer": "2"
+    },
+    {
+      "question": "Which operation combines tuples from two relations?",
+      "options": ["Union", "Join", "Selection", "Difference"],
+      "answer": "2"
+    },
+    {
+      "question": "COUNT is an example of:",
+      "options": ["Set operation", "Aggregate function", "Join operation", "Constraint"],
+      "answer": "2"
+    },
+    {
+      "question": "Which clause filters grouped records?",
+      "options": ["WHERE", "HAVING", "GROUP BY", "ORDER BY"],
+      "answer": "2"
+    },
+    {
+      "question": "A query inside another query is called:",
+      "options": ["Primary query", "Nested query", "Join query", "Derived query"],
+      "answer": "2"
+    },
+    {
+      "question": "Which SQL command adds new records?",
+      "options": ["ADD", "INSERT", "UPDATE", "APPEND"],
+      "answer": "2"
+    },
+    {
+      "question": "Which of the following is non-procedural?",
+      "options": ["Relational Algebra", "TRC", "DRC", "SQL"],
+      "answer": "4"
+    }
+  ]
+}

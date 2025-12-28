@@ -1,0 +1,56 @@
+{
+  "unit": "UNIT I",
+  "questions": [
+    {
+      "question": "Which of the following best defines a database?",
+      "options": ["A collection of unrelated files", "A collection of programs", "An organized collection of related data", "A temporary storage location"],
+      "answer": "3"
+    },
+    {
+      "question": "Which is NOT an advantage of DBMS over file system?",
+      "options": ["Data redundancy control", "Data independence", "Increased data inconsistency", "Security"],
+      "answer": "3"
+    },
+    {
+      "question": "Which level of DBMS architecture describes physical storage?",
+      "options": ["External level", "Conceptual level", "Internal level", "View level"],
+      "answer": "3"
+    },
+    {
+      "question": "Which database language is used to define database schema?",
+      "options": ["DML", "DCL", "DDL", "TCL"],
+      "answer": "3"
+    },
+    {
+      "question": "Who is responsible for database security and authorization?",
+      "options": ["End user", "Application programmer", "Database Administrator", "System analyst"],
+      "answer": "3"
+    },
+    {
+      "question": "Data independence means:",
+      "options": ["Data stored in multiple files", "Application programs independent of data storage", "Data duplication", "Data inconsistency"],
+      "answer": "2"
+    },
+    {
+      "question": "Which of the following is a database model?",
+      "options": ["Agile model", "Waterfall model", "Network model", "Spiral model"],
+      "answer": "3"
+    },
+    {
+      "question": "Which language is used to control access privileges?",
+      "options": ["DDL", "DML", "DCL", "SQL"],
+      "answer": "3"
+    },
+    {
+      "question": "Schema represents:",
+      "options": ["Actual data", "Temporary data", "Logical structure of database", "Backup data"],
+      "answer": "3"
+    },
+    {
+      "question": "Which component manages data storage and retrieval?",
+      "options": ["Query processor", "Storage manager", "Transaction manager", "DDL compiler"],
+      "answer": "2"
+    }
+  ]
+}
+

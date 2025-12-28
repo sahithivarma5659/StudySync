@@ -1,13 +1,18 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from openai import OpenAI
 import os
+import json
+import random
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+QUESTIONS_DIR = os.path.join(BASE_DIR, "questions")
+
 
 # ---------- APP SETUP ----------
 app = Flask(__name__)
 CORS(app)
 
-client = OpenAI()  # uses OPENAI_API_KEY from env
+
 
 BASE_DIR = "/Users/sahithichokkam/Desktop/Project_BeginX/StudySync"
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -59,56 +64,28 @@ def read_syllabus_text():
     files = os.listdir(syllabus_dir)
     return " ".join(files)
 
-# ---------- MOCK QUIZ (FALLBACK) ----------
-def mock_quiz():
-    return [
-        {
-            "question": "What is DBMS?",
-            "options": ["Software", "Hardware", "Network", "Protocol"],
-            "answer": 0
-        },
-        {
-            "question": "Which language is used to query databases?",
-            "options": ["HTML", "SQL", "CSS", "Python"],
-            "answer": 1
-        }
-    ]
+
 
 # ---------- GENERATE QUIZ ----------
-@app.route("/generate-quiz", methods=["GET"])
-def generate_quiz():
-    syllabus_text = read_syllabus_text()
+@app.route("/get-quiz", methods=["POST"])
+def get_quiz():
 
-    try:
-        # 🔥 TRY REAL AI
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "Generate 2 MCQ quiz questions in JSON format."
-                },
-                {
-                    "role": "user",
-                    "content": f"Syllabus topics: {syllabus_text}"
-                }
-            ]
-        )
+    data = request.json
+    units = data.get("units", [])
 
-        quiz_text = response.choices[0].message.content
-        return jsonify({
-            "source": "openai",
-            "quiz": quiz_text
-        })
+    quiz = {}
 
-    except Exception as e:
-        # 🟡 FALLBACK (VERY IMPORTANT)
-        print("⚠️ OpenAI failed, using mock quiz:", e)
+    for unit in units:
+        file_path = os.path.join(QUESTIONS_DIR, f"unit{unit}.json")
 
-        return jsonify({
-            "source": "mock",
-            "quiz": mock_quiz()
-        })
+        if os.path.exists(file_path):
+            with open(file_path, "r") as f:
+                questions = json.load(f)["questions"]
+                quiz[f"unit_{unit}"] = random.sample(questions, 5)
+
+    return jsonify({ "quiz": quiz })
+
+
 
 # ---------- RUN ----------
 if __name__ == "__main__":
