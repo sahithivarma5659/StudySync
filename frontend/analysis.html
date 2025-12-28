@@ -36,9 +36,9 @@
   <button onclick="saveSpeed()">Generate Timetable</button>
 </div>
 
-<script>
+<script type="module" src="script.js">
 /*********************
- ANALYSIS LOGIC
+ ANALYSIS LOGIC (FINAL FIX)
 *********************/
 function getLevel(score) {
   if (score <= 2) return "Weak";
@@ -46,26 +46,31 @@ function getLevel(score) {
   return "Strong";
 }
 
-const scores = [
-  { unit: "Unit II", score: Number(localStorage.getItem("unit_2_score")) },
-  { unit: "Unit III", score: Number(localStorage.getItem("unit_3_score")) },
-  { unit: "Unit IV", score: Number(localStorage.getItem("unit_4_score")) }
-];
+const analysisDiv = document.getElementById("analysisContent");
+const quizData = JSON.parse(localStorage.getItem("quizData"));
 
-let html = "<table><tr><th>Unit</th><th>Score</th><th>Level</th></tr>";
+if (!quizData) {
+  analysisDiv.innerHTML = "<p>No quiz data found.</p>";
+} else {
+  let html = "<table><tr><th>Unit</th><th>Score</th><th>Level</th></tr>";
 
-scores.forEach(s => {
-  html += `
-    <tr>
-      <td>${s.unit}</td>
-      <td>${s.score}/5</td>
-      <td>${getLevel(s.score)}</td>
-    </tr>
-  `;
-});
+  Object.keys(quizData).forEach(unitKey => {
+    const score = localStorage.getItem(`${unitKey}_score`);
 
-html += "</table>";
-document.getElementById("analysisContent").innerHTML = html;
+    if (score !== null) {
+      html += `
+        <tr>
+          <td>${unitKey.replace("_", " ").toUpperCase()}</td>
+          <td>${score}/5</td>
+          <td>${getLevel(Number(score))}</td>
+        </tr>
+      `;
+    }
+  });
+
+  html += "</table>";
+  analysisDiv.innerHTML = html;
+}
 
 /*********************
  SAVE LEARNER SPEED
@@ -79,14 +84,12 @@ function saveSpeed() {
   }
 
   localStorage.setItem("learnerSpeed", selected.value);
-
-  // unlock next steps
   localStorage.setItem("timetableGenerated", "true");
   localStorage.setItem("importantReady", "true");
 
   window.location.href = "/frontend/timetable.html";
 }
-</script>
 
+</script>
 </body>
 </html>

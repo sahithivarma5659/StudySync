@@ -22,16 +22,16 @@
 <div class="login-wrapper">
   <div class="login-card">
     <h2>Log In</h2>
-    <input placeholder="Email">
-    <input type="password" placeholder="Password">
-    <button onclick="goHome()">Log In</button>
-     
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Log In</button>
 <p class="signup-text">
   New user? <span class="signup-link" onclick="goSignup()">Sign Up</span>
 </p>
   </div>
 </div>
 
-<script src="script.js"></script>
+<script type="module" src="firebase1.js"></script>
+<script type="module" src="script.js"></script>
 </body>
 </html>
