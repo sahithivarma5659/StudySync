@@ -1,12 +1,16 @@
 /*********************************
  FIREBASE AUTH IMPORTS
 *********************************/
+console.log("StudySync script.js loaded");
+
 import { auth } from "./firebase.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+console.log("Firebase modules imported successfully");
 
 /*********************************
  NAVIGATION
@@ -70,8 +74,9 @@ window.login = async () => {
  AUTH GUARD
 *********************************/
 onAuthStateChanged(auth, user => {
-  const page = location.pathname;
-  if (!user && !page.includes("index.html") && !page.includes("signup.html")) {
+  const page = location.pathname + location.href;
+  const isAuthPage = page.includes("index") || page.includes("signup");
+  if (!user && !isAuthPage) {
     goLogin();
   }
 });
@@ -95,10 +100,12 @@ window.showFiles = (inputId, listId) => {
  DOMContentLoaded — page-specific logic
 *********************************/
 document.addEventListener("DOMContentLoaded", () => {
-  const page = location.pathname;
+  const page = location.pathname + location.href;
+  console.log("DOMContentLoaded - page:", page);
 
   // UPLOAD PAGE
-  if (page.includes("upload.html")) {
+  if (page.includes("upload")) {
+    console.log("Upload page detected");
     const generateBtn = document.getElementById("generateBtn");
     if (generateBtn) {
       generateBtn.addEventListener("click", () => {
@@ -113,16 +120,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // UNIT SELECTION PAGE
-  if (page.includes("unitSelection.html")) {
+  if (page.includes("unitSelection")) {
+    console.log("Unit selection page detected");
     const generateQuizBtn = document.getElementById("generateQuizBtn");
+    console.log("generateQuizBtn found:", generateQuizBtn);
     if (generateQuizBtn) {
       generateQuizBtn.addEventListener("click", () => {
+        console.log("Generate Quiz button clicked");
         const checked = document.querySelectorAll('input[name="unit"]:checked');
         if (checked.length === 0) {
           alert("Select at least one unit.");
           return;
         }
         const units = Array.from(checked).map(cb => cb.value);
+        console.log("Selected units:", units);
         // Store selected units and initialize quiz state
         sessionStorage.setItem("selectedUnits", JSON.stringify(units));
         sessionStorage.setItem("currentUnitIndex", "0");
@@ -133,32 +144,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // QUIZ PAGE
-  if (page.includes("quiz.html")) {
+  if (page.includes("quiz") && !page.includes("generateQuiz")) {
     initQuiz();
   }
 
   // ANALYSIS PAGE
-  if (page.includes("analysis.html")) {
+  if (page.includes("analysis")) {
     displayAnalysis();
   }
 
   // TIMETABLE PAGE
-  if (page.includes("timetable.html")) {
+  if (page.includes("timetable")) {
     generateTimetable();
   }
 
   // IMPORTANT QUESTIONS PAGE
-  if (page.includes("important.html")) {
+  if (page.includes("important")) {
     loadImportantQuestions();
   }
 
   // NOTES PAGE
-  if (page.includes("notes.html")) {
+  if (page.includes("notes")) {
     loadNotes();
   }
 
   // RESOURCES PAGE
-  if (page.includes("resources.html")) {
+  if (page.includes("resources")) {
     loadResources();
   }
 });
@@ -193,7 +204,7 @@ async function initQuiz() {
   
   try {
     // Fetch from frontend/questions/ folder
-    const res = await fetch("questions/unit" + currentUnit + ".json");
+    const res = await fetch("./questions/unit" + currentUnit + ".json");
     if (!res.ok) throw new Error("Failed to load unit " + currentUnit);
     const data = await res.json();
 
@@ -524,7 +535,7 @@ async function loadImportantQuestions() {
 
   for (const unitNum of selectedUnits) {
     try {
-      const res = await fetch("important/unit" + unitNum + ".json");
+      const res = await fetch("./important/unit" + unitNum + ".json");
       if (!res.ok) throw new Error("Failed to load");
       const data = await res.json();
 
