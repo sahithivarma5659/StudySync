@@ -199,9 +199,13 @@ async function initQuiz() {
   
   try {
     // Fetch from frontend/questions/ folder
-    const res = await fetch("questions/unit" + currentUnit + ".json");
-    if (!res.ok) throw new Error("Failed to load unit " + currentUnit);
+    const filePath = "questions/unit" + currentUnit + ".json";
+    console.log("Fetching:", filePath);
+    const res = await fetch(filePath);
+    console.log("Response status:", res.status);
+    if (!res.ok) throw new Error("HTTP " + res.status + " - Failed to load unit " + currentUnit);
     const data = await res.json();
+    console.log("Questions loaded:", data.questions.length);
 
     // Shuffle and pick 5 random questions
     const shuffled = shuffleArray([...data.questions]);
@@ -211,7 +215,7 @@ async function initQuiz() {
     quizQuestions.forEach(q => q.unitNum = currentUnit);
 
   } catch (err) {
-    console.error(err);
+    console.error("Error loading quiz:", err);
     document.getElementById("questionText").textContent = "Failed to load questions for Unit " + currentUnit;
     return;
   }
@@ -530,9 +534,13 @@ async function loadImportantQuestions() {
 
   for (const unitNum of selectedUnits) {
     try {
-      const res = await fetch("important/unit" + unitNum + ".json");
-      if (!res.ok) throw new Error("Failed to load");
+      const filePath = "important/unit" + unitNum + ".json";
+      console.log("Fetching important:", filePath);
+      const res = await fetch(filePath);
+      console.log("Response status:", res.status);
+      if (!res.ok) throw new Error("HTTP " + res.status + " - Failed to load unit " + unitNum);
       const data = await res.json();
+      console.log("Important questions loaded for unit " + unitNum + ":", data.questions.length);
 
       html += '<div class="unit-section">';
       html += '<h3 class="unit-header">' + data.unit + '</h3>';
@@ -554,7 +562,7 @@ async function loadImportantQuestions() {
 
       html += '</div></div>';
     } catch (err) {
-      console.error("Error loading unit " + unitNum, err);
+      console.error("Error loading unit " + unitNum + ":", err);
       html += '<div class="unit-section"><h3>Unit ' + unitNum + '</h3><p>Questions not available.</p></div>';
     }
   }
