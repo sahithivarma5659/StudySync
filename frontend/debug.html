@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>StudySync | Debug</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .debug-section {
+      background: white;
+      padding: 20px;
+      margin: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .debug-section h3 {
+      margin-top: 0;
+    }
+    .debug-info {
+      font-family: monospace;
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .test-btn {
+      background: #4285f4;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    .test-btn:hover {
+      background: #357abd;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="logo-section">
+    <div class="logo">🔧</div>
+    <div class="app-name">StudySync Debug</div>
+  </div>
+  <button class="home-btn" onclick="location.href='home.html'">🏠 Home</button>
+</div>
+
+<div class="debug-section">
+  <h3>📋 Session Storage Data</h3>
+  <div class="debug-info" id="sessionData">Loading...</div>
+  <button class="test-btn" onclick="clearSession()">Clear Session Storage</button>
+</div>
+
+<div class="debug-section">
+  <h3>📦 Test JSON File Loading</h3>
+  <button class="test-btn" onclick="testQuizFiles()">Test Quiz Files</button>
+  <button class="test-btn" onclick="testImportantFiles()">Test Important Files</button>
+  <div class="debug-info" id="fileTestResults"></div>
+</div>
+
+<div class="debug-section">
+  <h3>🔍 Quick Test</h3>
+  <button class="test-btn" onclick="setupTestSession()">Setup Test Session (Unit 1)</button>
+  <button class="test-btn" onclick="location.href='quiz.html'">Go to Quiz</button>
+  <button class="test-btn" onclick="location.href='important.html'">Go to Important</button>
+</div>
+
+<script type="module">
+  // Display session storage data
+  function updateSessionData() {
+    const data = {
+      selectedUnits: sessionStorage.getItem("selectedUnits"),
+      currentUnitIndex: sessionStorage.getItem("currentUnitIndex"),
+      unitScores: sessionStorage.getItem("unitScores"),
+      learnerSpeed: sessionStorage.getItem("learnerSpeed"),
+      daysLeft: sessionStorage.getItem("daysLeft"),
+      hoursPerDay: sessionStorage.getItem("hoursPerDay")
+    };
+    document.getElementById("sessionData").textContent = JSON.stringify(data, null, 2);
+  }
+
+  window.clearSession = () => {
+    sessionStorage.clear();
+    alert("Session storage cleared!");
+    updateSessionData();
+  };
+
+  window.setupTestSession = () => {
+    sessionStorage.setItem("selectedUnits", JSON.stringify(["1"]));
+    sessionStorage.setItem("currentUnitIndex", "0");
+    sessionStorage.setItem("unitScores", JSON.stringify({}));
+    alert("Test session setup complete! Selected Unit 1.");
+    updateSessionData();
+  };
+
+  window.testQuizFiles = async () => {
+    const results = document.getElementById("fileTestResults");
+    results.innerHTML = "Testing quiz files...\n\n";
+    
+    for (let i = 1; i <= 5; i++) {
+      try {
+        const res = await fetch(`questions/unit${i}.json`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        results.innerHTML += `✅ Unit ${i}: ${data.questions.length} questions loaded\n`;
+      } catch (err) {
+        results.innerHTML += `❌ Unit ${i}: ${err.message}\n`;
+      }
+    }
+  };
+
+  window.testImportantFiles = async () => {
+    const results = document.getElementById("fileTestResults");
+    results.innerHTML = "Testing important files...\n\n";
+    
+    for (let i = 1; i <= 5; i++) {
+      try {
+        const res = await fetch(`important/unit${i}.json`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        results.innerHTML += `✅ Unit ${i}: ${data.questions.length} questions loaded\n`;
+      } catch (err) {
+        results.innerHTML += `❌ Unit ${i}: ${err.message}\n`;
+      }
+    }
+  };
+
+  // Initial load
+  updateSessionData();
+</script>
+
+</body>
+</html>
