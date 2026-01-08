@@ -8,9 +8,12 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-const API = "https://studysync-1-zgdy.onrender.com";
+// API base URL - use relative path for same-origin, absolute for different origin
+const API_BASE = window.location.hostname === "localhost" 
+  ? "" 
+  : "https://studysync-1-zgdy.onrender.com";
 
-fetch(`${API}/api/test`);
+console.log("StudySync loaded, API:", API_BASE || "same-origin");
 
 
 
@@ -76,8 +79,14 @@ window.login = async () => {
  AUTH GUARD
 *********************************/
 onAuthStateChanged(auth, user => {
-  const page = location.pathname;
-  if (!user && !page.includes("index.html") && !page.includes("signup.html")) {
+  const page = location.pathname.toLowerCase();
+  const href = location.href.toLowerCase();
+  const isAuthPage = page.includes("index") || page.includes("signup") || 
+                     href.includes("index") || href.includes("signup") ||
+                     page === "/" || page === "";
+  
+  if (!user && !isAuthPage) {
+    console.log("Not logged in, redirecting to login");
     goLogin();
   }
 });
@@ -101,10 +110,17 @@ window.showFiles = (inputId, listId) => {
  DOMContentLoaded — page-specific logic
 *********************************/
 document.addEventListener("DOMContentLoaded", () => {
-  const page = location.pathname;
+  const page = window.location.pathname.toLowerCase();
+  const href = window.location.href.toLowerCase();
+  
+  console.log("Page loaded:", page, "| Full URL:", href);
+
+  // Helper to check page - works with both /path and /path.html
+  const isPage = (name) => page.includes(name) || href.includes(name);
 
   // UPLOAD PAGE
-  if (page.includes("upload.html")) {
+  if (isPage("upload")) {
+    console.log("Upload page detected");
     const generateBtn = document.getElementById("generateBtn");
     if (generateBtn) {
       generateBtn.addEventListener("click", () => {
@@ -119,52 +135,64 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // UNIT SELECTION PAGE
-  if (page.includes("unitSelection.html")) {
+  if (isPage("unitselection") || isPage("unit")) {
+    console.log("Unit Selection page detected");
     const generateQuizBtn = document.getElementById("generateQuizBtn");
     if (generateQuizBtn) {
+      console.log("Generate Quiz button found, attaching listener");
       generateQuizBtn.addEventListener("click", () => {
+        console.log("Generate Quiz clicked");
         const checked = document.querySelectorAll('input[name="unit"]:checked');
         if (checked.length === 0) {
           alert("Select at least one unit.");
           return;
         }
         const units = Array.from(checked).map(cb => cb.value);
+        console.log("Selected units:", units);
         // Store selected units and initialize quiz state
         sessionStorage.setItem("selectedUnits", JSON.stringify(units));
         sessionStorage.setItem("currentUnitIndex", "0");
         sessionStorage.setItem("unitScores", JSON.stringify({}));
         location.href = "quiz.html";
       });
+    } else {
+      console.error("Generate Quiz button NOT found!");
     }
   }
 
   // QUIZ PAGE
-  if (page.includes("quiz.html")) {
+  if (isPage("quiz")) {
+    console.log("Quiz page detected");
     initQuiz();
   }
 
   // ANALYSIS PAGE
-  if (page.includes("analysis.html")) {
+  if (isPage("analysis")) {
+    console.log("Analysis page detected");
     displayAnalysis();
   }
 
   // TIMETABLE PAGE
-  if (page.includes("timetable.html")) {
+  if (isPage("timetable")) {
+    console.log("Timetable page detected");
     generateTimetable();
   }
 
   // IMPORTANT QUESTIONS PAGE
-  if (page.includes("important.html")) {
+  if (isPage("important")) {
+    console.log("Important page detected");
     loadImportantQuestions();
   }
 
   // NOTES PAGE
-  if (page.includes("notes.html")) {
+  if (isPage("notes")) {
+    console.log("Notes page detected");
     loadNotes();
   }
 
   // RESOURCES PAGE
-  if (page.includes("resources.html")) {
+  if (isPage("resources")) {
+    console.log("Resources page detected");
     loadResources();
   }
 });

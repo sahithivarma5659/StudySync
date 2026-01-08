@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 import json
@@ -11,6 +11,7 @@ from firebase_admin import credentials, auth
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 QUESTIONS_DIR = os.path.join(BASE_DIR, "questions")
+FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
 
 
 # ---------- FIREBASE INITIALIZATION (Environment Variables) ----------
@@ -89,7 +90,7 @@ def verify_firebase_token(f):
 
 
 # ---------- APP SETUP ----------
-app = Flask(__name__)
+app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path='')
 CORS(app)
 
 # Initialize Firebase on app startup
@@ -100,10 +101,27 @@ initialize_firebase()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "..", "data")  # Goes up one level to StudySync/data
 
-# ---------- HOME ----------
+
+# ---------- SERVE FRONTEND ----------
 @app.route("/")
-def home():
-    return jsonify({"status": "StudySync Backend Running"})
+def serve_index():
+    return send_from_directory(FRONTEND_DIR, "index.html")
+
+@app.route("/<path:path>")
+def serve_frontend(path):
+    # Try to serve the file from frontend directory
+    file_path = os.path.join(FRONTEND_DIR, path)
+    if os.path.exists(file_path) and os.path.isfile(file_path):
+        return send_from_directory(FRONTEND_DIR, path)
+    # If it's a route without extension, serve index.html (for SPA)
+    if '.' not in path:
+        return send_from_directory(FRONTEND_DIR, "index.html")
+    return jsonify({"error": "Not found"}), 404
+
+# ---------- API TEST ENDPOINT ----------
+@app.route("/api/test")
+def api_test():
+    return jsonify({"status": "ok", "message": "StudySync API is running!"})
 
 # ---------- UPLOAD SYLLABUS ----------
 @app.route("/upload-syllabus", methods=["POST"])
