@@ -16,16 +16,28 @@
   <div class="menu-container">
     <div class="hamburger" onclick="toggleMenu()">☰</div>
     <div class="menu-dropdown" id="menuDropdown">
-      <div class="menu-header">📊 My Progress</div>
-      <div class="menu-item" onclick="goToAnalysis()">📈 Previous Quiz Results</div>
-      <div class="menu-item" onclick="goTimetable()">📅 My Timetables</div>
+      <div class="menu-header">My Progress</div>
+      <div class="menu-item" onclick="goToAnalysis()">
+        <span class="menu-icon">📈</span> Previous Quiz Results
+      </div>
+      <div class="menu-item" onclick="goTimetable()">
+        <span class="menu-icon">📅</span> My Timetables
+      </div>
       <div class="menu-divider"></div>
-      <div class="menu-header">📖 Study Materials</div>
-      <div class="menu-item" onclick="goImportant()">📋 Important Questions</div>
-      <div class="menu-item" onclick="goNotes()">📝 Study Notes</div>
-      <div class="menu-item" onclick="goResources()">🎥 Video Resources</div>
+      <div class="menu-header">Study Materials</div>
+      <div class="menu-item" onclick="goImportant()">
+        <span class="menu-icon">📋</span> Important Questions
+      </div>
+      <div class="menu-item" onclick="goNotes()">
+        <span class="menu-icon">📝</span> Study Notes
+      </div>
+      <div class="menu-item" onclick="goResources()">
+        <span class="menu-icon">🎥</span> Video Resources
+      </div>
       <div class="menu-divider"></div>
-      <div class="menu-item" onclick="goUpload()">🚀 Start New Quiz</div>
+      <div class="menu-item menu-cta" onclick="goUpload()">
+        <span class="menu-icon">🚀</span> Start New Quiz
+      </div>
     </div>
   </div>
 </div>

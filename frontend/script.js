@@ -32,6 +32,21 @@ window.goNotes = () => location.href = "notes.html";
 window.goResources = () => location.href = "resources.html";
 
 /*********************************
+ TOGGLE PASSWORD VISIBILITY
+*********************************/
+window.togglePassword = (inputId, toggleElement) => {
+  const input = document.getElementById(inputId);
+  const icon = toggleElement.querySelector('.eye-icon');
+  if (input.type === "password") {
+    input.type = "text";
+    icon.classList.add('eye-off');
+  } else {
+    input.type = "password";
+    icon.classList.remove('eye-off');
+  }
+};
+
+/*********************************
  SIGN UP
 *********************************/
 window.signup = async () => {
@@ -432,6 +447,22 @@ window.saveSpeed = () => {
 /*********************************
  TIMETABLE PAGE — Generate based on learner type, days left, and hours per day
 *********************************/
+
+// Helper function to format hours as "X hr Y min"
+function formatTime(hours) {
+  const totalMinutes = Math.round(hours * 60);
+  const hrs = Math.floor(totalMinutes / 60);
+  const mins = totalMinutes % 60;
+  
+  if (mins === 0) {
+    return hrs + ' hr' + (hrs !== 1 ? 's' : '');
+  } else if (hrs === 0) {
+    return mins + ' min';
+  } else {
+    return hrs + ' hr ' + mins + ' min';
+  }
+}
+
 function generateTimetable() {
   const timetableContent = document.getElementById("timetableContent");
   const slowLearnerNote = document.getElementById("slowLearnerNote");
@@ -451,20 +482,8 @@ function generateTimetable() {
     slowLearnerNote.style.display = "block";
   }
 
-  // Total available study hours (user's max capacity)
-  const maxTotalHours = daysLeft * hoursPerDay;
-
-  // Learner speed multiplier - fast learners need less of the total time
-  // Slow: uses 100% of available time
-  // Average: uses 75% of available time  
-  // Fast: uses 50% of available time
-  const speedMultiplier = {
-    slow: 1.0,
-    average: 0.75,
-    fast: 0.5
-  };
-
-  const effectiveHours = maxTotalHours * (speedMultiplier[learnerSpeed] || 0.75);
+  // Total available study hours based on user input (exact values)
+  const totalHours = daysLeft * hoursPerDay;
 
   // Calculate weight for each unit based on performance (weaker = more time needed)
   const weights = { weak: 3, average: 2, strong: 1 };
@@ -483,9 +502,9 @@ function generateTimetable() {
     totalWeight += weight;
   });
 
-  // Reserve time for revision (15% of effective hours, minimum 0.5 hrs)
-  const revisionHours = Math.max(0.5, Math.round(effectiveHours * 0.15 * 10) / 10);
-  const studyHours = effectiveHours - revisionHours;
+  // Reserve time for revision (10% of total hours, minimum 0.5 hrs)
+  const revisionHours = Math.max(0.5, Math.round(totalHours * 0.10 * 10) / 10);
+  const studyHours = totalHours - revisionHours;
 
   // Distribute study hours based on weights
   let allocatedTotal = 0;
@@ -499,49 +518,67 @@ function generateTimetable() {
     allocatedTotal += u.hours;
   });
 
-  // Build simple day-wise schedule
+  // Build day-wise schedule respecting hoursPerDay exactly
   let html = "";
-  const totalDays = Math.min(daysLeft, selectedUnits.length + 1); // +1 for revision
+  let currentDay = 1;
+  let hoursRemainingToday = hoursPerDay;
   
-  // Calculate hours per day based on effective hours and days
-  const effectiveHoursPerDay = Math.round((effectiveHours / totalDays) * 10) / 10;
-
-  // Assign units to days
+  // Create schedule that respects exact hours per day
   unitData.forEach((u, idx) => {
-    const dayNum = idx + 1;
-    html += '<tr>';
-    html += '<td>Day ' + dayNum + '</td>';
-    html += '<td>Unit ' + u.unitNum + '</td>';
-    html += '<td style="color:' + (u.performance === 'weak' ? '#e74c3c' : u.performance === 'average' ? '#f39c12' : '#27ae60') + ';font-weight:bold;">' + u.performance.charAt(0).toUpperCase() + u.performance.slice(1) + '</td>';
-    html += '<td>' + u.hours + ' hrs</td>';
-    html += '</tr>';
+    let unitHoursLeft = u.hours;
+    
+    while (unitHoursLeft > 0 && currentDay <= daysLeft) {
+      const hoursThisSession = Math.min(unitHoursLeft, hoursRemainingToday);
+      
+      html += '<tr>';
+      html += '<td>Day ' + currentDay + '</td>';
+      html += '<td>Unit ' + u.unitNum + '</td>';
+      html += '<td style="color:' + (u.performance === 'weak' ? '#e74c3c' : u.performance === 'average' ? '#f39c12' : '#27ae60') + ';font-weight:bold;">' + u.performance.charAt(0).toUpperCase() + u.performance.slice(1) + '</td>';
+      html += '<td>' + formatTime(hoursThisSession) + '</td>';
+      html += '</tr>';
+      
+      unitHoursLeft -= hoursThisSession;
+      hoursRemainingToday -= hoursThisSession;
+      
+      if (hoursRemainingToday <= 0.1) {
+        currentDay++;
+        hoursRemainingToday = hoursPerDay;
+      }
+    }
   });
 
-  // Add revision day
-  const revisionDay = selectedUnits.length + 1;
-  if (revisionDay <= daysLeft) {
-    html += '<tr>';
-    html += '<td>Day ' + revisionDay + '</td>';
-    html += '<td>Revision (All Units)</td>';
-    html += '<td style="color:#3498db;font-weight:bold;">Review</td>';
-    html += '<td>' + revisionHours + ' hrs</td>';
-    html += '</tr>';
+  // Add revision if there's time left
+  if (currentDay <= daysLeft && revisionHours > 0) {
+    let revisionLeft = revisionHours;
+    while (revisionLeft > 0 && currentDay <= daysLeft) {
+      const hoursThisSession = Math.min(revisionLeft, hoursRemainingToday);
+      
+      html += '<tr>';
+      html += '<td>Day ' + currentDay + '</td>';
+      html += '<td>Revision (All Units)</td>';
+      html += '<td style="color:#3498db;font-weight:bold;">Review</td>';
+      html += '<td>' + formatTime(hoursThisSession) + '</td>';
+      html += '</tr>';
+      
+      revisionLeft -= hoursThisSession;
+      hoursRemainingToday -= hoursThisSession;
+      
+      if (hoursRemainingToday <= 0.1) {
+        currentDay++;
+        hoursRemainingToday = hoursPerDay;
+      }
+    }
   }
 
   // Summary section
   const actualTotal = Math.round((allocatedTotal + revisionHours) * 10) / 10;
-  const freeTime = Math.round((maxTotalHours - actualTotal) * 10) / 10;
   
-  html += '<tr style="background:#e8f4e8;font-weight:bold;"><td colspan="3">📚 Required Study Time</td><td>' + actualTotal + ' hrs</td></tr>';
-  html += '<tr style="background:#f0f7ff;"><td colspan="3">⏰ Your Available Time (' + daysLeft + ' days × ' + hoursPerDay + ' hrs)</td><td>' + maxTotalHours + ' hrs</td></tr>';
-  
-  if (freeTime > 0) {
-    html += '<tr style="background:#fff3cd;"><td colspan="3">🎉 Free Time / Buffer</td><td>' + freeTime + ' hrs</td></tr>';
-  }
+  html += '<tr style="background:#e8f4e8;font-weight:bold;"><td colspan="3">📚 Total Study Time</td><td>' + formatTime(actualTotal) + '</td></tr>';
+  html += '<tr style="background:#f0f7ff;"><td colspan="3">⏰ Your Plan: ' + daysLeft + ' days × ' + hoursPerDay + ' hrs/day</td><td>' + formatTime(totalHours) + '</td></tr>';
 
   // Add learner speed info
   const speedEmoji = learnerSpeed === 'fast' ? '🚀' : learnerSpeed === 'slow' ? '🐢' : '🚶';
-  html += '<tr style="background:#f8f9fa;"><td colspan="4">' + speedEmoji + ' <strong>' + learnerSpeed.charAt(0).toUpperCase() + learnerSpeed.slice(1) + ' Learner</strong> - Using ' + Math.round(speedMultiplier[learnerSpeed] * 100) + '% of available time</td></tr>';
+  html += '<tr style="background:#f8f9fa;"><td colspan="4">' + speedEmoji + ' <strong>' + learnerSpeed.charAt(0).toUpperCase() + learnerSpeed.slice(1) + ' Learner</strong></td></tr>';
 
   timetableContent.innerHTML = html;
 }

@@ -16,42 +16,99 @@
 </div>
 
 <div class="page-container">
-  <h2>Select Units for Quiz</h2>
+  <div class="unit-selection-card">
+    <h2>📚 Select Units for Quiz</h2>
+    <p class="unit-subtitle">Choose the units you want to be tested on. You'll get 5 questions per unit.</p>
 
-  <div id="unitForm" style="margin-top:25px; text-align:left;">
-
-    <label>
-      <input type="checkbox" name="unit" value="1"> Unit I
-    </label><br><br>
-
-    <label>
-      <input type="checkbox" name="unit" value="2"> Unit II
-    </label><br><br>
-
-    <label>
-      <input type="checkbox" name="unit" value="3"> Unit III
-    </label><br><br>
-
-    <label>
-      <input type="checkbox" name="unit" value="4"> Unit IV
-    </label><br><br>
-
-    <label>
-      <input type="checkbox" name="unit" value="5"> Unit V
-    </label><br><br>
-
-    <div style="text-align:center; margin-top:25px;">
-     <button id="generateQuizBtn" type="button" class="primary-btn">
-       Generate Quiz
-     </button>
-
-
-
-     </div>
-
+    <div class="select-actions">
+      <button type="button" class="select-all-btn" onclick="selectAllUnits()">Select All</button>
+      <button type="button" class="clear-all-btn" onclick="clearAllUnits()">Clear All</button>
     </div>
+
+    <div id="unitForm" class="unit-grid">
+      <label class="unit-card">
+        <input type="checkbox" name="unit" value="1">
+        <div class="unit-content">
+          <span class="unit-number">I</span>
+          <span class="unit-title">Introduction to DBMS</span>
+          <span class="unit-topics">Database concepts, Architecture, ER Model</span>
+        </div>
+        <div class="check-icon">✓</div>
+      </label>
+
+      <label class="unit-card">
+        <input type="checkbox" name="unit" value="2">
+        <div class="unit-content">
+          <span class="unit-number">II</span>
+          <span class="unit-title">Relational Model</span>
+          <span class="unit-topics">Relations, Keys, Relational Algebra</span>
+        </div>
+        <div class="check-icon">✓</div>
+      </label>
+
+      <label class="unit-card">
+        <input type="checkbox" name="unit" value="3">
+        <div class="unit-content">
+          <span class="unit-number">III</span>
+          <span class="unit-title">Normalization</span>
+          <span class="unit-topics">Functional Dependencies, Normal Forms</span>
+        </div>
+        <div class="check-icon">✓</div>
+      </label>
+
+      <label class="unit-card">
+        <input type="checkbox" name="unit" value="4">
+        <div class="unit-content">
+          <span class="unit-number">IV</span>
+          <span class="unit-title">SQL & Transactions</span>
+          <span class="unit-topics">SQL queries, ACID, Concurrency</span>
+        </div>
+        <div class="check-icon">✓</div>
+      </label>
+
+      <label class="unit-card">
+        <input type="checkbox" name="unit" value="5">
+        <div class="unit-content">
+          <span class="unit-number">V</span>
+          <span class="unit-title">Storage & Indexing</span>
+          <span class="unit-topics">File Organization, B-Trees, Hashing</span>
+        </div>
+        <div class="check-icon">✓</div>
+      </label>
+    </div>
+
+    <div class="selected-count">
+      <span id="selectedCount">0</span> units selected
+    </div>
+
+    <button id="generateQuizBtn" type="button" class="generate-quiz-btn">
+      🚀 Start Quiz
+    </button>
+  </div>
 </div>
 
 <script type="module" src="script.js"></script>
+<script>
+  function selectAllUnits() {
+    document.querySelectorAll('input[name="unit"]').forEach(cb => cb.checked = true);
+    updateSelectedCount();
+  }
+  
+  function clearAllUnits() {
+    document.querySelectorAll('input[name="unit"]').forEach(cb => cb.checked = false);
+    updateSelectedCount();
+  }
+  
+  function updateSelectedCount() {
+    const count = document.querySelectorAll('input[name="unit"]:checked').length;
+    document.getElementById('selectedCount').textContent = count;
+  }
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('input[name="unit"]').forEach(cb => {
+      cb.addEventListener('change', updateSelectedCount);
+    });
+  });
+</script>
 </body>
 </html>

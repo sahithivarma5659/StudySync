@@ -17,7 +17,15 @@
     <h2>Sign Up</h2>
     <input id="name" placeholder="Full Name">
     <input id="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
+    <div class="password-wrapper">
+      <input id="password" type="password" placeholder="Password">
+      <span class="toggle-password" onclick="togglePassword('password', this)">
+        <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </span>
+    </div>
     <button onclick="signup()">Create Account</button>
     <p class="signup-text">
       Already have an account?
