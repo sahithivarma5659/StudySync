@@ -485,6 +485,24 @@ function generateTimetable() {
   // Total available study hours based on user input (exact values)
   const totalHours = daysLeft * hoursPerDay;
 
+  // Calculate buffer time based on learner speed
+  // Buffer comes FROM total time - faster learners need less study time, so they have buffer
+  let bufferPercent = 0;
+  let bufferLabel = "";
+  if (learnerSpeed === "slow") {
+    bufferPercent = 0; // No buffer - uses all available time for study
+    bufferLabel = "Uses all available time for study";
+  } else if (learnerSpeed === "average") {
+    bufferPercent = 15; // 15% buffer - uses 85% for study
+    bufferLabel = "15% buffer time available";
+  } else if (learnerSpeed === "fast") {
+    bufferPercent = 25; // 25% buffer - uses 75% for study
+    bufferLabel = "25% buffer time available";
+  }
+  
+  const bufferTime = Math.round(totalHours * (bufferPercent / 100) * 10) / 10;
+  const effectiveStudyTime = totalHours - bufferTime; // Actual time allocated for study
+
   // Calculate weight for each unit based on performance (weaker = more time needed)
   const weights = { weak: 3, average: 2, strong: 1 };
   
@@ -502,9 +520,9 @@ function generateTimetable() {
     totalWeight += weight;
   });
 
-  // Reserve time for revision (10% of total hours, minimum 0.5 hrs)
-  const revisionHours = Math.max(0.5, Math.round(totalHours * 0.10 * 10) / 10);
-  const studyHours = totalHours - revisionHours;
+  // Reserve time for revision (10% of effective study time, minimum 0.5 hrs)
+  const revisionHours = Math.max(0.5, Math.round(effectiveStudyTime * 0.10 * 10) / 10);
+  const studyHours = effectiveStudyTime - revisionHours;
 
   // Distribute study hours based on weights
   let allocatedTotal = 0;
@@ -572,13 +590,28 @@ function generateTimetable() {
 
   // Summary section
   const actualTotal = Math.round((allocatedTotal + revisionHours) * 10) / 10;
-  
-  html += '<tr style="background:#e8f4e8;font-weight:bold;"><td colspan="3">📚 Total Study Time</td><td>' + formatTime(actualTotal) + '</td></tr>';
-  html += '<tr style="background:#f0f7ff;"><td colspan="3">⏰ Your Plan: ' + daysLeft + ' days × ' + hoursPerDay + ' hrs/day</td><td>' + formatTime(totalHours) + '</td></tr>';
-
-  // Add learner speed info
   const speedEmoji = learnerSpeed === 'fast' ? '🚀' : learnerSpeed === 'slow' ? '🐢' : '🚶';
-  html += '<tr style="background:#f8f9fa;"><td colspan="4">' + speedEmoji + ' <strong>' + learnerSpeed.charAt(0).toUpperCase() + learnerSpeed.slice(1) + ' Learner</strong></td></tr>';
+  
+  // Total available time header
+  html += '<tr style="background:#f0f7ff;font-weight:bold;"><td colspan="3">⏰ Total Available Time (' + daysLeft + ' days × ' + hoursPerDay + ' hrs)</td><td>' + formatTime(totalHours) + '</td></tr>';
+  
+  // Study time allocated
+  html += '<tr style="background:#e8f4e8;"><td colspan="3">📚 Study Time Allocated</td><td style="font-weight:bold;">' + formatTime(actualTotal) + '</td></tr>';
+  
+  // Buffer time based on learner type
+  if (learnerSpeed === "slow") {
+    // Slow learner - no buffer, uses all time
+    html += '<tr style="background:#fff3e0;"><td colspan="3">⏱️ Buffer Time</td><td style="color:#e65100;font-weight:bold;">0 min</td></tr>';
+    html += '<tr style="background:#fff8e1;"><td colspan="4">' + speedEmoji + ' <strong>Slow Learner</strong> - ' + bufferLabel + '</td></tr>';
+  } else if (learnerSpeed === "average") {
+    // Average learner - 15% buffer
+    html += '<tr style="background:#e3f2fd;"><td colspan="3">⏱️ Buffer Time (Free Time)</td><td style="color:#1976d2;font-weight:bold;">' + formatTime(bufferTime) + '</td></tr>';
+    html += '<tr style="background:#e8f4fc;"><td colspan="4">' + speedEmoji + ' <strong>Average Learner</strong> - ' + bufferLabel + '</td></tr>';
+  } else if (learnerSpeed === "fast") {
+    // Fast learner - 25% buffer
+    html += '<tr style="background:#e8f5e9;"><td colspan="3">⏱️ Buffer Time (Free Time)</td><td style="color:#2e7d32;font-weight:bold;">' + formatTime(bufferTime) + '</td></tr>';
+    html += '<tr style="background:#f1f8e9;"><td colspan="4">' + speedEmoji + ' <strong>Fast Learner</strong> - ' + bufferLabel + '</td></tr>';
+  }
 
   timetableContent.innerHTML = html;
 }
